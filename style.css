@@ -1,0 +1,167 @@
+/* تنسيق عام */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f0f8ff;
+  direction: rtl;
+  padding: 20px;
+  margin: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+form input, form button, .filters input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.date-input {
+  background-color: #f9f9f9;
+  color: #333;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  font-weight: bold;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+form button, .excel-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+form button:hover {
+  background-color: #218838;
+}
+
+.filters {
+  margin: 15px 0;
+}
+
+#expense-list {
+  list-style: none;
+  padding: 0;
+}
+
+#expense-list li {
+  background: #f8f9fa;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+#expense-list li span {
+  display: block;
+}
+
+.total {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.excel-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  font-size: 1em;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.excel-btn:hover {
+  background-color: #0056b3;
+}
+
+/* أزرار التعديل والحذف */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.edit-btn, .delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  font-size: 0.9em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  transition: 0.3s ease;
+}
+
+.edit-btn svg, .delete-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: white;
+}
+
+/* ألوان */
+.edit-btn {
+  background-color: #007bff;
+}
+.edit-btn:hover {
+  background-color: #0056b3;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+}
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
+  }
+
+  #expense-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .action-buttons {
+    align-self: flex-end;
+  }
+}
