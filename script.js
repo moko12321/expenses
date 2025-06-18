@@ -1,4 +1,3 @@
-// تحميل المصروفات من التخزين المحلي أو البدء بمصفوفة فارغة
 let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
 
 document.getElementById("expense-form").addEventListener("submit", function (e) {
@@ -43,18 +42,42 @@ function renderExpenses() {
     const li = document.createElement("li");
     li.innerHTML = `
       <div>
-        <span><strong>${exp.name}</strong> - ${exp.amount}$</span>
+        <span><strong>${exp.name}</strong> - ${exp.amount}₺</span>
         <span>${exp.date} | ${exp.note}</span>
       </div>
-      <button onclick="deleteExpense(${index})">🗑️</button>
+      <div class="actions">
+        <button onclick="editExpense(${index})" title="تعديل">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#2196f3" viewBox="0 0 24 24">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 000-1.42l-2.34-2.34a1.003 1.003 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+          </svg>
+        </button>
+        <button onclick="deleteExpense(${index})" title="حذف">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#f44336" viewBox="0 0 24 24">
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 
+            1H5v2h14V4z"/>
+          </svg>
+        </button>
+      </div>
     `;
     list.appendChild(li);
   });
 
-  document.getElementById("total-amount").textContent = total.toFixed(2);
+  document.getElementById("total-amount").textContent = total.toFixed(2) + '₺';
 }
 
 function deleteExpense(index) {
+  expenses.splice(index, 1);
+  saveExpenses();
+  renderExpenses();
+}
+
+function editExpense(index) {
+  const exp = expenses[index];
+  document.getElementById("expense-name").value = exp.name;
+  document.getElementById("expense-amount").value = exp.amount;
+  document.getElementById("expense-date").value = exp.date;
+  document.getElementById("expense-note").value = exp.note;
+
   expenses.splice(index, 1);
   saveExpenses();
   renderExpenses();
@@ -75,7 +98,6 @@ document.getElementById("export-btn").addEventListener("click", () => {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "المصروفات");
 
-  // إنشاء ملف بصيغة Blob لضمان التوافق مع الهواتف
   const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
   const blob = new Blob([wbout], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -89,5 +111,4 @@ document.getElementById("export-btn").addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-// عرض المصروفات عند تحميل الصفحة
 renderExpenses();
