@@ -1,5 +1,5 @@
+// تحميل المصروفات من التخزين المحلي أو البدء بمصفوفة فارغة
 let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
-let editIndex = -1;
 
 document.getElementById("expense-form").addEventListener("submit", function (e) {
   e.preventDefault();
@@ -9,14 +9,9 @@ document.getElementById("expense-form").addEventListener("submit", function (e) 
   const date = document.getElementById("expense-date").value;
   const note = document.getElementById("expense-note").value;
 
-  if (editIndex === -1) {
-    expenses.push({ name, amount, date, note });
-  } else {
-    expenses[editIndex] = { name, amount, date, note };
-    editIndex = -1;
-    document.getElementById("submit-btn").textContent = "➕ أضف مصروف";
-  }
+  if (!name || !amount || !date) return;
 
+  expenses.push({ name, amount, date, note });
   saveExpenses();
   renderExpenses();
   this.reset();
@@ -29,6 +24,7 @@ function saveExpenses() {
 function renderExpenses() {
   const list = document.getElementById("expense-list");
   list.innerHTML = "";
+
   const filterNote = document.getElementById("filter-note").value.toLowerCase();
   const filterDate = document.getElementById("filter-date").value;
 
@@ -47,24 +43,15 @@ function renderExpenses() {
     const li = document.createElement("li");
     li.innerHTML = `
       <div>
-        <span><strong>${exp.name}</strong> - ${exp.amount.toFixed(2)} ₺</span>
+        <span><strong>${exp.name}</strong> - ${exp.amount}$</span>
         <span>${exp.date} | ${exp.note}</span>
       </div>
-      <div class="action-buttons">
-        <button class="edit-btn" onclick="editExpense(${index})">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>
-          تعديل
-        </button>
-        <button class="delete-btn" onclick="deleteExpense(${index})">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-4.5l-1-1z"/></svg>
-          حذف
-        </button>
-      </div>
+      <button onclick="deleteExpense(${index})">🗑️</button>
     `;
     list.appendChild(li);
   });
 
-  document.getElementById("total-amount").textContent = `${total.toFixed(2)} ₺`;
+  document.getElementById("total-amount").textContent = total.toFixed(2);
 }
 
 function deleteExpense(index) {
@@ -73,24 +60,13 @@ function deleteExpense(index) {
   renderExpenses();
 }
 
-function editExpense(index) {
-  const exp = expenses[index];
-  document.getElementById("expense-name").value = exp.name;
-  document.getElementById("expense-amount").value = exp.amount;
-  document.getElementById("expense-date").value = exp.date;
-  document.getElementById("expense-note").value = exp.note;
-
-  document.getElementById("submit-btn").textContent = "💾 حفظ التعديل";
-  editIndex = index;
-}
-
 document.getElementById("filter-note").addEventListener("input", renderExpenses);
 document.getElementById("filter-date").addEventListener("input", renderExpenses);
 
 document.getElementById("export-btn").addEventListener("click", () => {
   const exportData = expenses.map(exp => ({
     "الاسم": exp.name,
-    "المبلغ (₺)": exp.amount.toFixed(2),
+    "المبلغ": exp.amount,
     "التاريخ": exp.date,
     "الملاحظات": exp.note
   }));
@@ -99,7 +75,19 @@ document.getElementById("export-btn").addEventListener("click", () => {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "المصروفات");
 
-  XLSX.writeFile(workbook, "المصروفات_الليرة_التركية.xlsx");
+  // إنشاء ملف بصيغة Blob لضمان التوافق مع الهواتف
+  const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([wbout], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "المصروفات.xlsx";
+  a.click();
+  URL.revokeObjectURL(url);
 });
 
+// عرض المصروفات عند تحميل الصفحة
 renderExpenses();
